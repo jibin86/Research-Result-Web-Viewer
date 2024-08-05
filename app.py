@@ -1,5 +1,6 @@
 from flask import Flask, render_template, send_from_directory, url_for
 import os
+import markdown
 from natsort import natsorted
 
 app = Flask(__name__)
@@ -10,13 +11,18 @@ BASE_VIDEO_DIR = os.path.join(app.root_path, 'static', 'videos')
 def get_directory_content(path):
     directories = []
     files = []
+    md_content = None
     for item in natsorted(os.listdir(path)):
         full_path = os.path.join(path, item)
         if os.path.isdir(full_path):
             directories.append(item)
-        elif os.path.isfile(full_path) and (item.endswith('.mp4') or item.endswith('.gif') or item.endswith('.jpg') or item.endswith('.jpeg') or item.endswith('.png')):
-            files.append(item)
-    return directories, files
+        elif os.path.isfile(full_path):
+            if item.endswith('.md'):
+                with open(full_path, 'r', encoding='utf-8') as f:
+                    md_content = markdown.markdown(f.read())
+            elif item.endswith('.mp4') or item.endswith('.gif') or item.endswith('.jpg') or item.endswith('.jpeg') or item.endswith('.png'):
+                files.append(item)
+    return directories, files, md_content
 
 @app.route('/')
 def index():
@@ -26,8 +32,8 @@ def index():
 @app.route('/browse/<path:subpath>')
 def browse(subpath):
     current_path = os.path.join(BASE_VIDEO_DIR, subpath)
-    directories, files = get_directory_content(current_path)
-    return render_template('browse.html', subpath=subpath, directories=directories, files=files)
+    directories, files, md_content = get_directory_content(current_path)
+    return render_template('browse.html', subpath=subpath, directories=directories, files=files, md_content=md_content)
 
 @app.route('/videos/<path:filename>')
 def get_video(filename):

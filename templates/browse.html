@@ -38,10 +38,21 @@
             width: 100%;
             height: auto;
         }
+        .md-content {
+            border: 1px solid #ddd;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>{{ subpath | replace('/', ' / ') }}</h1>
+    
+    {% if md_content %}
+    <div class="md-content">
+        {{ md_content|safe }}
+    </div>
+    {% endif %}
+    
     <ul>
         {% for directory in directories %}
         <li><a href="{{ url_for('browse', subpath=subpath + '/' + directory) }}">{{ directory }}</a></li>
