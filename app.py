@@ -4,35 +4,30 @@ from natsort import natsorted
 
 app = Flask(__name__)
 
-# 동영상 파일이 저장된 디렉터리 경로 설정
+# 동영상 및 이미지 파일이 저장된 디렉터리 경로 설정
 BASE_VIDEO_DIR = os.path.join(app.root_path, 'static', 'videos')
 
-def get_titles():
-    return natsorted([title for title in os.listdir(BASE_VIDEO_DIR) if os.path.isdir(os.path.join(BASE_VIDEO_DIR, title))])
-
-def get_subtitles(title):
-    title_path = os.path.join(BASE_VIDEO_DIR, title)
-    return natsorted([subtitle for subtitle in os.listdir(title_path) if os.path.isdir(os.path.join(title_path, subtitle))])
-
-def get_videos(title, subtitle):
-    subtitle_path = os.path.join(BASE_VIDEO_DIR, title, subtitle)
-    # return natsorted([video for video in os.listdir(subtitle_path) if os.path.isfile(os.path.join(subtitle_path, video)) and (video.endswith('.mp4') or video.endswith('.gif'))])
-    return natsorted([video for video in os.listdir(subtitle_path) if os.path.isfile(os.path.join(subtitle_path, video)) and (video.endswith('.mp4'))])
+def get_directory_content(path):
+    directories = []
+    files = []
+    for item in natsorted(os.listdir(path)):
+        full_path = os.path.join(path, item)
+        if os.path.isdir(full_path):
+            directories.append(item)
+        elif os.path.isfile(full_path) and (item.endswith('.mp4') or item.endswith('.gif') or item.endswith('.jpg') or item.endswith('.jpeg') or item.endswith('.png')):
+            files.append(item)
+    return directories, files
 
 @app.route('/')
 def index():
-    titles = get_titles()
+    titles = natsorted([title for title in os.listdir(BASE_VIDEO_DIR) if os.path.isdir(os.path.join(BASE_VIDEO_DIR, title))])
     return render_template('index.html', titles=titles)
 
-@app.route('/<title>')
-def title_page(title):
-    subtitles = get_subtitles(title)
-    return render_template('subtitles.html', title=title, subtitles=subtitles)
-
-@app.route('/<title>/<subtitle>')
-def subtitle_page(title, subtitle):
-    videos = get_videos(title, subtitle)
-    return render_template('videos.html', title=title, subtitle=subtitle, videos=videos)
+@app.route('/browse/<path:subpath>')
+def browse(subpath):
+    current_path = os.path.join(BASE_VIDEO_DIR, subpath)
+    directories, files = get_directory_content(current_path)
+    return render_template('browse.html', subpath=subpath, directories=directories, files=files)
 
 @app.route('/videos/<path:filename>')
 def get_video(filename):

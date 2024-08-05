@@ -29,10 +29,10 @@
     </style>
 </head>
 <body>
-    <h1>Video Titles</h1>
+    <h1>Titles</h1>
     <ul>
         {% for title in titles %}
-        <li><a href="{{ url_for('title_page', title=title) }}">{{ title }}</a></li>
+        <li><a href="{{ url_for('browse', subpath=title) }}">{{ title }}</a></li>
         {% endfor %}
     </ul>
 </body>

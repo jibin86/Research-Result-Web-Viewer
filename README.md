@@ -1,0 +1,2 @@
+# Research Result Web Viewer
+A Flask-based web application for showcasing research results, including videos, images, and documentation. The platform supports hierarchical navigation through directories and displays various media formats like MP4, GIF, and image files, as well as Markdown documentation.

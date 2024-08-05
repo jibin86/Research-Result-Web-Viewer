@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subpath | replace('/', ' / ') }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .grid-item {
+            text-align: center;
+        }
+        video, img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ subpath | replace('/', ' / ') }}</h1>
+    <ul>
+        {% for directory in directories %}
+        <li><a href="{{ url_for('browse', subpath=subpath + '/' + directory) }}">{{ directory }}</a></li>
+        {% endfor %}
+    </ul>
+    <div class="grid-container">
+        {% for file in files %}
+        <div class="grid-item">
+            <p>{{ file }}</p>
+            {% if file.endswith('.mp4') %}
+            <video controls>
+                <source src="{{ url_for('get_video', filename=subpath + '/' + file) }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            {% elif file.endswith('.gif') or file.endswith('.jpg') or file.endswith('.jpeg') or file.endswith('.png') %}
+            <img src="{{ url_for('get_video', filename=subpath + '/' + file) }}" alt="{{ file }}" loop>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
