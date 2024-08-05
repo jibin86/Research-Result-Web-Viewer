@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subtitle }} - Videos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .grid-item {
+            text-align: center;
+        }
+        video, img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    <h2>{{ subtitle }}</h2>
+    <h2>{seed}-{idx:0~2}_c.mp4</h2>
+    <div class="grid-container">
+        {% for video in videos %}
+        <div class="grid-item">
+            <p>{{ video }}</p>
+            {% if video.endswith('.mp4') %}
+            <video controls>
+                <source src="{{ url_for('get_video', filename=title + '/' + subtitle + '/' + video) }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            {% elif video.endswith('.gif') %}
+            <img src="{{ url_for('get_video', filename=title + '/' + subtitle + '/' + video) }}" alt="{{ video }}" loop>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
